@@ -14,6 +14,7 @@ plugins/diagram-kit/skills/create-diagram/
   assets/viewer/        theme tokens, the SVG renderer and the viewer (browser-safe, shared)
   assets/               fonts, Lucide icons, font metrics, licences
 plugins/diagram-kit/.claude-plugin, .codex-plugin   plugin manifests (names and versions agree with plugins/diagram-kit/package.json)
+.opencode/commands/       native OpenCode commands; skills are shared from .agents/skills/
 plugins/diagram-kit/skills/create-diagram/agents/openai.yaml   Codex display metadata for the skill
 .claude-plugin/, .agents/plugins/                   marketplaces
 .agents/skills/create-diagram -> the skill (and .claude/skills -> .agents/skills) for dogfooding here

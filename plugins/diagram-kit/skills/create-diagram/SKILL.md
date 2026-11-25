@@ -14,6 +14,7 @@ Agents are poor at placing boxes from scratch. Split the work: you decide what t
 - Node 22.12 or newer.
 - `node <skill>/scripts/diagram.mjs setup` installs the pinned dependencies into `~/.cache/diagram-kit/` (needs network). One install serves Claude Code, Codex and every copy of the skill, and survives plugin refreshes. In Codex, ask to run it with escalated permissions.
 - CLI: `node <skill>/scripts/diagram.mjs` (`help` lists commands). It prints the setup command when dependencies are missing.
+- OpenCode discovers this skill from `.agents/skills/` or `~/.agents/skills/`; `/create-diagram` is a native command in `.opencode/commands/` or `~/.config/opencode/commands/`. Use OpenCode's `shell` tool for setup and builds; request approval if its permissions require it.
 
 ## Adapt, never impose
 
@@ -36,7 +37,7 @@ Agents are poor at placing boxes from scratch. Split the work: you decide what t
 5. **Explore** ([layout](references/layout.md)): `node <skill>/scripts/diagram.mjs variants <spec> --out <dir>` lays the spec out several ways (both reading directions, order kept or free, three placements, wrapped into rows or not), measures each and writes `sheet.png` side by side, in about a second. Look at the sheet once and pick the layout that gets the message across best; copy its printed `direction` and `layout:` lines into the spec. Sequences and mind maps have one layout: skip this step.
 6. **Build and check**: `diagram.mjs build <spec> --out <dir>` writes `<name>.layout.json`, `<name>.html` and `<name>.png`, and prints the measured report.
    - Code measures first: fix every ✗, weigh every !.
-   - Then look at the PNG (Read tool in Claude Code, `view_image` in Codex) with the [checklist](references/checklist.md): does the layout read well, are the shapes right, does the message come across?
+   - Then look at the PNG (Read tool in Claude Code and OpenCode, `view_image` in Codex) with the [checklist](references/checklist.md): does the layout read well, are the shapes right, does the message come across? OpenCode's `read` tool can inspect PNGs when the selected model supports image input. If it cannot, rely on the geometry report and say visual inspection was unavailable.
    - Meaning or message off: change the spec (parts, labels, groups, flows) or split the view. Composition off: pick another variant, or steer with tiers, order and groups.
    - At most three rounds, then report what is left.
 7. **Deliver in the destination's medium.** The checked `layout.json` and its PNG are the reference: the positions, sizes and shapes to build on.
@@ -51,3 +52,9 @@ Agents are poor at placing boxes from scratch. Split the work: you decide what t
 - Correct: every part, wire and label traces to code, a document or the user. Never invent components, protocols or numbers. Mark assumptions as assumptions.
 - Start from the engine's positions, never from your own guesses. Do not hand-edit generated files (they are rebuilt): change the spec, pick another variant, or adapt the reference in the destination.
 - Keep the spec (and brief) next to the output so the diagram can be rebuilt later.
+
+## OpenCode
+
+- Ask destination or clarification questions with OpenCode's `question` tool when available. If unavailable, ask in plain text and wait; for headless runs, use the default standalone HTML output.
+- The HTML is self-contained. Open it only when the user asks, agrees to opening it, or has enabled that preference. Use the host's shell tool so OpenCode permissions apply. Linux: `xdg-open "<html>"`; macOS: `open "<html>"`; Windows: `powershell.exe -NoProfile -Command "Start-Process -LiteralPath '<html>'"`. Detect WSL via `WSL_INTEROP` or `/proc/version`; there try `wslview "<html>"`, then `powershell.exe` with a Windows path from `wslpath -w "<html>"`. If the command is unavailable, fails, or the session is SSH/headless/containerized, report the absolute HTML path instead. Never start a server just to view the page.
+- If the user wants another medium, deliver that medium instead of opening a browser. Report the generated spec, layout JSON, HTML and PNG paths.

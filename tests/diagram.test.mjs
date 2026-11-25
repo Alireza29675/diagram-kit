@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { readdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -403,4 +403,11 @@ test('a group with an icon is a part holding smaller parts, and sameSize evens o
   assert.throws(() => normalizeSpec({ kind: 'architecture', groups: [{ id: 'g', icon: 'sigma' }, { id: 'h', parent: 'g' }], nodes: [] }), /drawn as a part/);
   const c = checkModel(model);
   assert.equal(c.issues.filter((i) => i.level !== 'info').length, 0, JSON.stringify(c.issues));
+});
+
+test('OpenCode command invokes the shared create-diagram skill with its request', () => {
+  const command = readFileSync(join(SKILL, '../../../../.opencode/commands/create-diagram.md'), 'utf8');
+  assert.match(command, /create-diagram/);
+  assert.match(command, /\$ARGUMENTS/);
+  assert.match(command, /skill/i);
 });
